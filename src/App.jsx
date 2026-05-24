@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import Timer from "./pages/Timer";
+import Analytics from "./pages/Analytics";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/timer" element={<Timer />} />
+            <Route path="/analytics" element={<Analytics />} />
           </Routes>
         </div>
       </div>

@@ -34,6 +34,14 @@ function Sidebar() {
             Pomodoro Timer
           </Link>
         </li>
+        <li>
+          <Link
+            to="/analytics"
+            className="hover:text-blue-400 hover:translate-x-2 transition duration-300 block"
+          >
+            Analytics
+          </Link>
+        </li>
       </ul>
     </div>
   );
