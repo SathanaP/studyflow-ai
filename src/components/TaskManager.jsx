@@ -1,8 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function TaskManager() {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
+
+  // Load tasks from localStorage
+  useEffect(() => {
+    const savedTasks = localStorage.getItem("tasks");
+
+    try {
+      if (savedTasks) {
+        setTasks(JSON.parse(savedTasks));
+      }
+    } catch {
+      console.log("Error loading tasks");
+    }
+  }, []);
+
+  // Save tasks to localStorage
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const addTask = () => {
     if (task.trim() === "") return;
