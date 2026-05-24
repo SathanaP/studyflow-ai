@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Sidebar() {
   return (
     <div className="w-64 h-screen bg-zinc-950 border-r border-zinc-800 text-white p-5">
@@ -6,20 +8,31 @@ function Sidebar() {
       </h1>
 
       <ul className="space-y-4">
-        <li className="hover:text-blue-400 hover:translate-x-2 transition duration-300 cursor-pointer">
-          Dashboard
+        <li>
+          <Link
+            to="/"
+            className="hover:text-blue-400 hover:translate-x-2 transition duration-300 block"
+          >
+            Dashboard
+          </Link>
         </li>
 
-        <li className="hover:text-blue-400 hover:translate-x-2 transition duration-300 cursor-pointer">
-          Tasks
+        <li>
+          <Link
+            to="/tasks"
+            className="hover:text-blue-400 hover:translate-x-2 transition duration-300 block"
+          >
+            Tasks
+          </Link>
         </li>
 
-        <li className="hover:text-blue-400 hover:translate-x-2 transition duration-300 cursor-pointer">
-          Pomodoro Timer
-        </li>
-
-        <li className="hover:text-blue-400 hover:translate-x-2 transition duration-300 cursor-pointer">
-          Analytics
+        <li>
+          <Link
+            to="/timer"
+            className="hover:text-blue-400 hover:translate-x-2 transition duration-300 block"
+          >
+            Pomodoro Timer
+          </Link>
         </li>
       </ul>
     </div>
