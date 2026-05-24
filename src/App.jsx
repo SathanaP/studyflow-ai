@@ -1,4 +1,5 @@
 import Sidebar from "./components/Sidebar";
+import PomodoroTimer from "./components/PomodoroTimer";
 import TaskManager from "./components/TaskManager";
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
 
         {/* Task Manager */}
         <TaskManager />
+        <PomodoroTimer />
       </div>
     </div>
   );
