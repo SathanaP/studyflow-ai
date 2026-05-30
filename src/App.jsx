@@ -7,10 +7,18 @@ import Tasks from "./pages/Tasks";
 import Timer from "./pages/Timer";
 import Analytics from "./pages/Analytics";
 
+import { useTheme } from "./context/ThemeContext";
+
 function App() {
+  const { darkMode } = useTheme();
+
   return (
     <BrowserRouter>
-      <div className="flex flex-col md:flex-row bg-black min-h-screen">
+      <div
+        className={`flex flex-col md:flex-row min-h-screen ${
+          darkMode ? "bg-black" : "bg-gray-100"
+        }`}
+      >
         <Sidebar />
 
         <div className="flex-1 p-10">
