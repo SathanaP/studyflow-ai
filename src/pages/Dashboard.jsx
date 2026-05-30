@@ -9,7 +9,7 @@ function Dashboard() {
         Track your productivity and study smarter.
       </p>
 
-      <div className="grid grid-cols-3 gap-6 mt-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
         <div className="bg-zinc-900/70 backdrop-blur-lg border border-zinc-800 p-6 rounded-3xl shadow-lg">
           <h2 className="text-xl font-semibold">
             Tasks Completed

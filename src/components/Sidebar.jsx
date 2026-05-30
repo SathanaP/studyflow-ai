@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-
 import {
   LayoutDashboard,
   CheckSquare,
@@ -9,13 +8,12 @@ import {
 
 function Sidebar() {
   return (
-    <div className="w-64 h-screen bg-zinc-950 border-r border-zinc-800 text-white p-5">
+    <div className="w-full md:w-64 min-h-screen bg-zinc-950 border-r border-zinc-800 text-white p-5 flex flex-col">
       <h1 className="text-3xl font-bold mb-10 text-blue-400">
         StudyFlow AI
       </h1>
 
-      <ul className="space-y-5">
-
+      <ul className="space-y-5 flex-1">
         <li>
           <Link
             to="/"
@@ -55,8 +53,18 @@ function Sidebar() {
             Analytics
           </Link>
         </li>
-
       </ul>
+
+      {/* User Profile Section */}
+      <div className="mt-10 border-t border-zinc-800 pt-5">
+        <p className="text-sm text-gray-400">
+          Logged in as
+        </p>
+
+        <p className="font-semibold text-blue-400">
+          Sathana
+        </p>
+      </div>
     </div>
   );
 }

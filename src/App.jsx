@@ -10,7 +10,7 @@ import Analytics from "./pages/Analytics";
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex bg-black min-h-screen">
+      <div className="flex flex-col md:flex-row bg-black min-h-screen">
         <Sidebar />
 
         <div className="flex-1 p-10">
