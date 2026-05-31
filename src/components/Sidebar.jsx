@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import Login from "./Login";
 import {
   LayoutDashboard,
   CheckSquare,
@@ -64,17 +65,8 @@ function Sidebar() {
         {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
       </button>
       */}
-
-      {/* User Profile Section */}
-      <div className="mt-10 border-t border-zinc-800 pt-5">
-        <p className="text-sm text-gray-400">
-          Logged in as
-        </p>
-
-        <p className="font-semibold text-blue-400">
-          Sathana
-        </p>
-      </div>
+      <Login />
+      
     </div>
   );
 }

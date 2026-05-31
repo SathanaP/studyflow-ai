@@ -1,26 +1,40 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 function TaskManager() {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
 
-  // Load tasks from localStorage
+  const { user } = useAuth();
+
+  // Load tasks for current user
   useEffect(() => {
-    const savedTasks = localStorage.getItem("tasks");
+    if (!user) return;
+
+    const savedTasks = localStorage.getItem(
+      `tasks_${user.email}`
+    );
 
     try {
       if (savedTasks) {
         setTasks(JSON.parse(savedTasks));
+      } else {
+        setTasks([]);
       }
     } catch {
       console.log("Error loading tasks");
     }
-  }, []);
+  }, [user]);
 
-  // Save tasks to localStorage
+  // Save tasks for current user
   useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
+    if (!user) return;
+
+    localStorage.setItem(
+      `tasks_${user.email}`,
+      JSON.stringify(tasks)
+    );
+  }, [tasks, user]);
 
   const addTask = () => {
     if (task.trim() === "") return;
@@ -30,7 +44,10 @@ function TaskManager() {
   };
 
   const deleteTask = (index) => {
-    const updatedTasks = tasks.filter((_, i) => i !== index);
+    const updatedTasks = tasks.filter(
+      (_, i) => i !== index
+    );
+
     setTasks(updatedTasks);
   };
 
@@ -58,21 +75,27 @@ function TaskManager() {
       </div>
 
       <div className="mt-6 space-y-3">
-        {tasks.map((t, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between bg-black p-4 rounded-xl"
-          >
-            <p>{t}</p>
-
-            <button
-              onClick={() => deleteTask(index)}
-              className="text-red-400 hover:text-red-500"
+        {tasks.length === 0 ? (
+          <p className="text-gray-400">
+            No tasks yet. Add your first task!
+          </p>
+        ) : (
+          tasks.map((t, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between bg-black p-4 rounded-xl"
             >
-              Delete
-            </button>
-          </div>
-        ))}
+              <p>{t}</p>
+
+              <button
+                onClick={() => deleteTask(index)}
+                className="text-red-400 hover:text-red-500"
+              >
+                Delete
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

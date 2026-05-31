@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import LoginPage from "./pages/LoginPage";
 
 import Sidebar from "./components/Sidebar";
 
@@ -6,11 +8,14 @@ import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import Timer from "./pages/Timer";
 import Analytics from "./pages/Analytics";
-
 import { useTheme } from "./context/ThemeContext";
 
 function App() {
   const { darkMode } = useTheme();
+  const { user } = useAuth();
+  if (!user) {
+  return <LoginPage />;
+}
 
   return (
     <BrowserRouter>
