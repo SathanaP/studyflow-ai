@@ -1,54 +1,90 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+
+import { db } from "../firebase/firebase";
+
 function TaskManager() {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
 
   const { user } = useAuth();
 
-  // Load tasks for current user
+  // Load tasks from Firestore
   useEffect(() => {
     if (!user) return;
 
-    const savedTasks = localStorage.getItem(
-      `tasks_${user.email}`
-    );
+    const loadTasks = async () => {
+      try {
+        const querySnapshot = await getDocs(
+          collection(db, "users", user.uid, "tasks")
+        );
 
-    try {
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      } else {
-        setTasks([]);
+        const loadedTasks = [];
+
+        querySnapshot.forEach((doc) => {
+          loadedTasks.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        });
+
+        setTasks(loadedTasks);
+      } catch (error) {
+        console.error("Error loading tasks:", error);
       }
-    } catch {
-      console.log("Error loading tasks");
-    }
+    };
+
+    loadTasks();
   }, [user]);
 
-  // Save tasks for current user
-  useEffect(() => {
-    if (!user) return;
-
-    localStorage.setItem(
-      `tasks_${user.email}`,
-      JSON.stringify(tasks)
-    );
-  }, [tasks, user]);
-
-  const addTask = () => {
+  // Add task
+  const addTask = async () => {
     if (task.trim() === "") return;
 
-    setTasks([...tasks, task]);
-    setTask("");
+    try {
+      const docRef = await addDoc(
+        collection(db, "users", user.uid, "tasks"),
+        {
+          text: task,
+          createdAt: new Date(),
+        }
+      );
+
+      setTasks([
+        ...tasks,
+        {
+          id: docRef.id,
+          text: task,
+        },
+      ]);
+
+      setTask("");
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
   };
 
-  const deleteTask = (index) => {
-    const updatedTasks = tasks.filter(
-      (_, i) => i !== index
-    );
+  // Delete task
+  const deleteTask = async (taskId) => {
+    try {
+      await deleteDoc(
+        doc(db, "users", user.uid, "tasks", taskId)
+      );
 
-    setTasks(updatedTasks);
+      setTasks(
+        tasks.filter((task) => task.id !== taskId)
+      );
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
 
   return (
@@ -80,15 +116,15 @@ function TaskManager() {
             No tasks yet. Add your first task!
           </p>
         ) : (
-          tasks.map((t, index) => (
+          tasks.map((t) => (
             <div
-              key={index}
+              key={t.id}
               className="flex items-center justify-between bg-black p-4 rounded-xl"
             >
-              <p>{t}</p>
+              <p>{t.text}</p>
 
               <button
-                onClick={() => deleteTask(index)}
+                onClick={() => deleteTask(t.id)}
                 className="text-red-400 hover:text-red-500"
               >
                 Delete

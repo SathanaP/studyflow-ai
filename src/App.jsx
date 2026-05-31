@@ -9,6 +9,7 @@ import Tasks from "./pages/Tasks";
 import Timer from "./pages/Timer";
 import Analytics from "./pages/Analytics";
 import { useTheme } from "./context/ThemeContext";
+import StudyPlanner from "./pages/StudyPlanner";
 
 function App() {
   const { darkMode } = useTheme();
@@ -32,6 +33,7 @@ function App() {
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/timer" element={<Timer />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/planner" element={<StudyPlanner />} />
           </Routes>
         </div>
       </div>

@@ -6,8 +6,8 @@ import {
   CheckSquare,
   Timer,
   BarChart3,
+  Brain,
 } from "lucide-react";
-
 function Sidebar() {
   const { darkMode, toggleTheme } = useTheme();
   return (
@@ -54,6 +54,15 @@ function Sidebar() {
           >
             <BarChart3 size={20} />
             Analytics
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/planner"
+            className="flex items-center gap-3 hover:text-blue-400 hover:translate-x-2 transition duration-300"
+          >
+          <Brain size={20} />
+            AI Planner
           </Link>
         </li>
       </ul>
