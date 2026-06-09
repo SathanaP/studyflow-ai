@@ -1,7 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
-import { collection, addDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+
 import { db } from "../firebase/firebase";
 
 function StudyPlanner() {
@@ -9,8 +16,36 @@ function StudyPlanner() {
   const [examDate, setExamDate] = useState("");
   const [hours, setHours] = useState("");
   const [plan, setPlan] = useState([]);
+  const [savedPlans, setSavedPlans] = useState([]);
 
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const loadSavedPlans = async () => {
+      try {
+        const querySnapshot = await getDocs(
+          collection(db, "users", user.uid, "studyPlans")
+        );
+
+        const plans = [];
+
+        querySnapshot.forEach((doc) => {
+          plans.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        });
+
+        setSavedPlans(plans);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadSavedPlans();
+  }, [user]);
 
   const generatePlan = () => {
     if (!subject || !examDate || !hours) return;
@@ -43,9 +78,7 @@ function StudyPlanner() {
     for (let i = 0; i < daysLeft; i++) {
       generatedPlan.push({
         day: `Day ${i + 1}`,
-        topic: `${subject} - ${
-          topics[i % topics.length]
-        }`,
+        topic: `${subject} - ${topics[i % topics.length]}`,
       });
     }
 
@@ -56,13 +89,8 @@ function StudyPlanner() {
     if (plan.length === 0) return;
 
     try {
-      await addDoc(
-        collection(
-          db,
-          "users",
-          user.uid,
-          "studyPlans"
-        ),
+      const docRef = await addDoc(
+        collection(db, "users", user.uid, "studyPlans"),
         {
           subject,
           examDate,
@@ -72,10 +100,46 @@ function StudyPlanner() {
         }
       );
 
+      setSavedPlans([
+        ...savedPlans,
+        {
+          id: docRef.id,
+          subject,
+          examDate,
+          hours,
+          plan,
+        },
+      ]);
+
       alert("Study plan saved successfully!");
     } catch (error) {
       console.error(error);
       alert("Failed to save study plan");
+    }
+  };
+
+  const deletePlan = async (planId) => {
+    try {
+      await deleteDoc(
+        doc(
+          db,
+          "users",
+          user.uid,
+          "studyPlans",
+          planId
+        )
+      );
+
+      setSavedPlans(
+        savedPlans.filter(
+          (plan) => plan.id !== planId
+        )
+      );
+
+      alert("Plan deleted successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete plan");
     }
   };
 
@@ -136,15 +200,68 @@ function StudyPlanner() {
                 key={index}
                 className="bg-black p-4 rounded-xl mb-3"
               >
-                <p className="font-bold">
-                  {item.day}
-                </p>
-
+                <p className="font-bold">{item.day}</p>
                 <p>{item.topic}</p>
               </div>
             ))}
           </div>
         )}
+
+        <div className="mt-10">
+          <h2 className="text-2xl font-semibold mb-4">
+            My Saved Study Plans
+          </h2>
+
+          {savedPlans.length === 0 ? (
+            <p className="text-gray-400">
+              No saved plans yet.
+            </p>
+          ) : (
+            savedPlans.map((saved) => (
+              <details
+                key={saved.id}
+                className="bg-black p-4 rounded-xl mb-4"
+              >
+              <summary className="cursor-pointer text-lg font-bold text-blue-400">
+                {saved.subject}
+              </summary>
+
+            <div className="flex justify-end mt-3">
+              <button
+                onClick={() => deletePlan(saved.id)}
+                className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-lg text-sm"
+              >
+            Delete
+    </button>
+  </div>
+
+                <div className="mt-3">
+                  <p>Exam Date: {saved.examDate}</p>
+
+                  <p>
+                    Hours Per Day: {saved.hours}
+                  </p>
+
+                  <p>
+                    Total Days: {saved.plan?.length}
+                  </p>
+
+                  <div className="mt-4">
+                    {saved.plan?.map((day, i) => (
+                      <div
+                        key={i}
+                        className="bg-zinc-900 p-3 rounded-lg mb-2"
+                      >
+                        <strong>{day.day}</strong>
+                        <p>{day.topic}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </details>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
