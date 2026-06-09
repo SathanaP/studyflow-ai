@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebase";
+import jsPDF from "jspdf";
 
 function StudyPlanner() {
   const [subject, setSubject] = useState("");
@@ -142,6 +143,30 @@ function StudyPlanner() {
       alert("Failed to delete plan");
     }
   };
+  const downloadPDF = (saved) => {
+  const pdf = new jsPDF();
+
+  pdf.setFontSize(18);
+  pdf.text(`${saved.subject} Study Plan`, 20, 20);
+
+  pdf.setFontSize(12);
+  pdf.text(`Exam Date: ${saved.examDate}`, 20, 35);
+  pdf.text(`Hours Per Day: ${saved.hours}`, 20, 45);
+
+  let y = 60;
+
+  saved.plan?.forEach((day) => {
+    pdf.text(`${day.day}: ${day.topic}`, 20, y);
+    y += 10;
+
+    if (y > 270) {
+      pdf.addPage();
+      y = 20;
+    }
+  });
+
+  pdf.save(`${saved.subject}_StudyPlan.pdf`);
+};
 
   return (
     <div className="text-white">
@@ -226,14 +251,21 @@ function StudyPlanner() {
                 {saved.subject}
               </summary>
 
-            <div className="flex justify-end mt-3">
+            <div className="flex gap-2 justify-end mt-3">
+              <button
+                onClick={() => downloadPDF(saved)}
+                className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-sm"
+              >
+              PDF
+              </button>
+
               <button
                 onClick={() => deletePlan(saved.id)}
                 className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-lg text-sm"
               >
-            Delete
-    </button>
-  </div>
+               Delete
+              </button>
+            </div>
 
                 <div className="mt-3">
                   <p>Exam Date: {saved.examDate}</p>
