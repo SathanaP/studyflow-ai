@@ -1,8 +1,38 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 function PomodoroTimer() {
   const [time, setTime] = useState(1500);
   const [isRunning, setIsRunning] = useState(false);
+
+  const { user } = useAuth();
+
+  const saveSession = async () => {
+    if (!user) return;
+
+    try {
+      await addDoc(
+        collection(
+          db,
+          "users",
+          user.uid,
+          "pomodoroSessions"
+        ),
+        {
+          completedAt: new Date(),
+          duration: 25,
+        }
+      );
+    } catch (error) {
+      console.error(
+        "Error saving pomodoro session:",
+        error
+      );
+    }
+  };
 
   useEffect(() => {
     let timer;
@@ -13,6 +43,14 @@ function PomodoroTimer() {
       }, 1000);
     }
 
+    if (time === 0 && isRunning) {
+      setIsRunning(false);
+
+      alert("Pomodoro Session Completed 🎉");
+
+      saveSession();
+    }
+
     return () => clearInterval(timer);
   }, [isRunning, time]);
 
@@ -20,7 +58,9 @@ function PomodoroTimer() {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
 
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes}:${
+      seconds < 10 ? "0" : ""
+    }${seconds}`;
   };
 
   const resetTimer = () => {

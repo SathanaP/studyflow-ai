@@ -11,6 +11,8 @@ function Dashboard() {
   const [completedTasks, setCompletedTasks] = useState(0);
   const [planCount, setPlanCount] = useState(0);
   const [productivity, setProductivity] = useState(0);
+  const [sessionCount, setSessionCount] = useState(0);
+  const [focusTime, setFocusTime] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -44,6 +46,17 @@ function Dashboard() {
         );
 
         setPlanCount(planSnapshot.size);
+        const sessionSnapshot = await getDocs(
+  collection(
+    db,
+    "users",
+    user.uid,
+    "pomodoroSessions"
+  )
+);
+
+setSessionCount(sessionSnapshot.size);
+setFocusTime(sessionSnapshot.size * 25);
       } catch (error) {
         console.error(error);
       }
@@ -55,14 +68,14 @@ function Dashboard() {
   return (
     <div className="text-white">
       <h1 className="text-4xl font-bold">
-        Welcome Back 👋
+  Welcome Back, {user?.displayName || "Student"} 👋
       </h1>
 
       <p className="text-gray-400 mt-3">
         Track your productivity and study smarter.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mt-10">
         <div className="bg-zinc-900/70 backdrop-blur-lg border border-zinc-800 p-6 rounded-3xl shadow-lg">
           <h2 className="text-xl font-semibold">
             Total Tasks
@@ -102,6 +115,24 @@ function Dashboard() {
             {productivity}%
           </p>
         </div>
+        <div className="bg-zinc-900/70 backdrop-blur-lg border border-zinc-800 p-6 rounded-3xl shadow-lg">
+  <h2 className="text-xl font-semibold">
+    Pomodoro Sessions
+  </h2>
+
+  <p className="text-4xl mt-4 font-bold">
+    {sessionCount}
+  </p>
+</div>
+<div className="bg-zinc-900/70 backdrop-blur-lg border border-zinc-800 p-6 rounded-3xl shadow-lg">
+  <h2 className="text-xl font-semibold">
+    Focus Time
+  </h2>
+
+  <p className="text-4xl mt-4 font-bold">
+    {Math.floor(focusTime / 60)}h {focusTime % 60}m
+  </p>
+</div>
       </div>
     </div>
   );
