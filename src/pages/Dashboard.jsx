@@ -8,7 +8,9 @@ function Dashboard() {
   const { user } = useAuth();
 
   const [taskCount, setTaskCount] = useState(0);
+  const [completedTasks, setCompletedTasks] = useState(0);
   const [planCount, setPlanCount] = useState(0);
+  const [productivity, setProductivity] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -19,7 +21,23 @@ function Dashboard() {
           collection(db, "users", user.uid, "tasks")
         );
 
-        setTaskCount(taskSnapshot.size);
+        const tasks = taskSnapshot.docs.map((doc) => doc.data());
+
+        const completed = tasks.filter(
+          (task) => task.completed
+        ).length;
+
+        setTaskCount(tasks.length);
+        setCompletedTasks(completed);
+
+        const productivityValue =
+          tasks.length > 0
+            ? Math.round(
+                (completed / tasks.length) * 100
+              )
+            : 0;
+
+        setProductivity(productivityValue);
 
         const planSnapshot = await getDocs(
           collection(db, "users", user.uid, "studyPlans")
@@ -44,7 +62,7 @@ function Dashboard() {
         Track your productivity and study smarter.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
         <div className="bg-zinc-900/70 backdrop-blur-lg border border-zinc-800 p-6 rounded-3xl shadow-lg">
           <h2 className="text-xl font-semibold">
             Total Tasks
@@ -52,6 +70,16 @@ function Dashboard() {
 
           <p className="text-4xl mt-4 font-bold">
             {taskCount}
+          </p>
+        </div>
+
+        <div className="bg-zinc-900/70 backdrop-blur-lg border border-zinc-800 p-6 rounded-3xl shadow-lg">
+          <h2 className="text-xl font-semibold">
+            Completed Tasks
+          </h2>
+
+          <p className="text-4xl mt-4 font-bold">
+            {completedTasks}
           </p>
         </div>
 
@@ -71,7 +99,7 @@ function Dashboard() {
           </h2>
 
           <p className="text-4xl mt-4 font-bold">
-            {taskCount + planCount > 0 ? "100%" : "0%"}
+            {productivity}%
           </p>
         </div>
       </div>

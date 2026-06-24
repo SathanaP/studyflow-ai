@@ -7,6 +7,7 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebase";
@@ -54,6 +55,7 @@ function TaskManager() {
         collection(db, "users", user.uid, "tasks"),
         {
           text: task,
+          completed: false,
           createdAt: new Date(),
         }
       );
@@ -63,6 +65,7 @@ function TaskManager() {
         {
           id: docRef.id,
           text: task,
+          completed: false,
         },
       ]);
 
@@ -72,15 +75,54 @@ function TaskManager() {
     }
   };
 
+  // Toggle task completion
+  const toggleTask = async (taskItem) => {
+    try {
+      await updateDoc(
+        doc(
+          db,
+          "users",
+          user.uid,
+          "tasks",
+          taskItem.id
+        ),
+        {
+          completed: !taskItem.completed,
+        }
+      );
+
+      setTasks(
+        tasks.map((t) =>
+          t.id === taskItem.id
+            ? {
+                ...t,
+                completed: !t.completed,
+              }
+            : t
+        )
+      );
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
   // Delete task
   const deleteTask = async (taskId) => {
     try {
       await deleteDoc(
-        doc(db, "users", user.uid, "tasks", taskId)
+        doc(
+          db,
+          "users",
+          user.uid,
+          "tasks",
+          taskId
+        )
       );
 
       setTasks(
-        tasks.filter((task) => task.id !== taskId)
+        tasks.filter(
+          (task) => task.id !== taskId
+        )
       );
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -121,7 +163,23 @@ function TaskManager() {
               key={t.id}
               className="flex items-center justify-between bg-black p-4 rounded-xl"
             >
-              <p>{t.text}</p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={t.completed || false}
+                  onChange={() => toggleTask(t)}
+                />
+
+                <p
+                  className={
+                    t.completed
+                      ? "line-through text-gray-500"
+                      : ""
+                  }
+                >
+                  {t.text}
+                </p>
+              </div>
 
               <button
                 onClick={() => deleteTask(t.id)}
