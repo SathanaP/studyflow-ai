@@ -10,6 +10,7 @@ import Timer from "./pages/Timer";
 import Analytics from "./pages/Analytics";
 import { useTheme } from "./context/ThemeContext";
 import StudyPlanner from "./pages/StudyPlanner";
+import AIChat from "./pages/AIChat";
 
 function App() {
   const { darkMode } = useTheme();
@@ -34,6 +35,7 @@ function App() {
             <Route path="/timer" element={<Timer />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/planner" element={<StudyPlanner />} />
+            <Route path="/ai-chat" element={<AIChat />} />
           </Routes>
         </div>
       </div>

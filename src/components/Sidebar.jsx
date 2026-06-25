@@ -65,6 +65,15 @@ function Sidebar() {
             AI Planner
           </Link>
         </li>
+        <li>
+          <Link
+            to="/ai-chat"
+            className="flex items-center gap-3 hover:text-blue-400 hover:translate-x-2 transition duration-300"
+          >
+          <Brain size={20} />
+            AI Assistant
+          </Link>
+        </li>
       </ul>
       {/*
       <button
